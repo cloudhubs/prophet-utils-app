@@ -36,6 +36,18 @@
 			</exclusions>
 		</dependency>
 
+        <dependency>
+            <groupId>edu.baylor.ecs.cloudhubs</groupId>
+            <artifactId>prophet-dto</artifactId>
+            <version>0.0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>edu.baylor.ecs.cloudhubs</groupId>
+            <artifactId>prophet-utils</artifactId>
+            <version>0.0.6</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>
