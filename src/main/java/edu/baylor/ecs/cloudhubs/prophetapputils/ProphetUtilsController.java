@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-public class JParserController {
+public class ProphetUtilsController {
 
     @PostMapping("/multirepoapp")
     public ProphetAppData getMultiRepoAppData(@RequestBody ProphetAppMultiRepoRequest request) throws IOException {
