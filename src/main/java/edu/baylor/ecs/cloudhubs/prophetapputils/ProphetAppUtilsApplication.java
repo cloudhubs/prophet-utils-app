@@ -2,6 +2,9 @@ package edu.baylor.ecs.cloudhubs.prophetapputils;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class ProphetAppUtilsApplication {
@@ -9,5 +12,16 @@ public class ProphetAppUtilsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ProphetAppUtilsApplication.class, args);
 	}
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/").allowedOrigins("http://localhost:4000");
+            }
+        };
+    }
+
 
 }

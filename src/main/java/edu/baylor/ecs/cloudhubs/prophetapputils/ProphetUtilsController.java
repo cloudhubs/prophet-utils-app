@@ -12,7 +12,7 @@ import java.io.IOException;
 @RestController
 public class ProphetUtilsController {
 
-    @PostMapping("/multirepoapp")
+    @PostMapping("/")
     public ProphetAppData getMultiRepoAppData(@RequestBody ProphetAppMultiRepoRequest request) throws IOException {
         ProphetAppData response = ProphetUtilsFacade.getProphetAppData(request);
         return response;
