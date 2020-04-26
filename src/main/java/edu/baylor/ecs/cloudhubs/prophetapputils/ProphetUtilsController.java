@@ -23,6 +23,12 @@ import java.util.List;
 @RestController
 public class ProphetUtilsController {
 
+    /**
+     * Append to start of passed path to retrieve path.
+     * Expand later to include other code sources
+     */
+    private final String repoPrefix = "https://github.com/";
+
     @PostMapping("/")
     public ProphetAppData getMultiRepoAppData(@RequestBody ProphetAppMultiRepoRequest request) {
         String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
@@ -36,7 +42,7 @@ public class ProphetUtilsController {
         try {
             List<ProphetAppRequest> localRepos = new ArrayList<>();
             for (ProphetAppRequest repo : request.getRepositories()) {
-                String repoUrl = repo.getPath();
+                String repoUrl = repoPrefix + repo.getPath();
                 String repoName = new URIish(repoUrl).getHumanishName();
                 String repoDirName = dirName + "/" + repoName;
                 File repoDir = new File(repoDirName);
