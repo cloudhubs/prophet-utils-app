@@ -1,8 +1,8 @@
 package edu.baylor.ecs.cloudhubs.prophetapputils;
 
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppData;
-import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppMultiRepoRequest;
-import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppRequest;
+import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.GitReq;
+import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.RepoReq;
 import edu.baylor.ecs.cloudhubs.prophetutils.ProphetUtilsFacade;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -34,7 +34,7 @@ public class ProphetUtilsController {
     Logger logger = LoggerFactory.getLogger(ProphetUtilsController.class);
 
     @PostMapping("/")
-    public ProphetAppData getMultiRepoAppData(@RequestBody ProphetAppMultiRepoRequest request) {
+    public ProphetAppData getMultiRepoAppData(@RequestBody GitReq request) {
         String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
         File dir = new File(dirName);
         boolean result = dir.mkdirs();
@@ -44,8 +44,8 @@ public class ProphetUtilsController {
         ProphetAppData data = new ProphetAppData();
 
         try {
-            List<ProphetAppRequest> localRepos = new ArrayList<>();
-            for (ProphetAppRequest repo : request.getRepositories()) {
+            List<RepoReq> localRepos = new ArrayList<>();
+            for (RepoReq repo : request.getRepositories()) {
                 String repoUrl = repoPrefix + repo.getPath();
                 String repoName = new URIish(repoUrl).getHumanishName();
                 String repoDirName = dirName + "/" + repoName;
