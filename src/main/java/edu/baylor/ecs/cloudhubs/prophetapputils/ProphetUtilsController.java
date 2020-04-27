@@ -8,6 +8,8 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.URIish;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +30,8 @@ public class ProphetUtilsController {
      * Expand later to include other code sources
      */
     private final String repoPrefix = "https://github.com/";
+
+    Logger logger = LoggerFactory.getLogger(ProphetUtilsController.class);
 
     @PostMapping("/")
     public ProphetAppData getMultiRepoAppData(@RequestBody ProphetAppMultiRepoRequest request) {
@@ -61,19 +65,22 @@ public class ProphetUtilsController {
                     repo.setPath(repoDir.getCanonicalPath());
                     localRepos.add(repo);
                 } catch (GitAPIException e) {
-                    System.out.println("Exception occurred while cloning repo");
+                    logger.error("Exception occurred while cloning repo: " + e.toString());
                     e.printStackTrace();
                 }
             }
             request.setRepositories(localRepos);
             data = ProphetUtilsFacade.getProphetAppData(request);
+            logger.info("Finished processing project");
         } catch(Exception e) {
-            System.out.println("Failed to process project!");
+            logger.error("Failed to process project!\n" + e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 FileUtils.deleteDirectory(dir);
             } catch (IOException e) {
-                System.out.println("Failed to delete project directory!");
+                logger.error("Failed to delete project directory!");
+                e.printStackTrace();
             }
         }
 
