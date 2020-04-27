@@ -26,3 +26,5 @@ Response format:
 	        ...
 	    ]
 	}
+
+Build prophet-dto and prophet-utils with `mvn clean install package -DskipTests`, then run this project with `mvn clean spring-boot:run -DskipTests`
