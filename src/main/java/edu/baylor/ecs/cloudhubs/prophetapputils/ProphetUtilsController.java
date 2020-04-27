@@ -1,6 +1,7 @@
 package edu.baylor.ecs.cloudhubs.prophetapputils;
 
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppData;
+import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetError;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.GitReq;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.RepoReq;
 import edu.baylor.ecs.cloudhubs.prophetutils.ProphetUtilsFacade;
@@ -10,6 +11,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.URIish;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +37,7 @@ public class ProphetUtilsController {
     Logger logger = LoggerFactory.getLogger(ProphetUtilsController.class);
 
     @PostMapping("/")
-    public ProphetAppData getMultiRepoAppData(@RequestBody GitReq request) {
+    public ResponseEntity getMultiRepoAppData(@RequestBody GitReq request) {
         String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
         File dir = new File(dirName);
         boolean result = dir.mkdirs();
@@ -75,6 +78,10 @@ public class ProphetUtilsController {
         } catch(Exception e) {
             logger.error("Failed to process project!\n" + e.getMessage());
             e.printStackTrace();
+            ProphetError error = new ProphetError();
+            error.setError(true);
+            error.setMessage(e.getMessage());
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         } finally {
             try {
                 FileUtils.deleteDirectory(dir);
@@ -84,6 +91,6 @@ public class ProphetUtilsController {
             }
         }
 
-        return data;
+        return ResponseEntity.ok(data);
     }
 }
