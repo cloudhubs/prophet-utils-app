@@ -68,8 +68,12 @@ public class ProphetUtilsController {
                     repo.setPath(repoDir.getCanonicalPath());
                     localRepos.add(repo);
                 } catch (GitAPIException e) {
-                    logger.error("Exception occurred while cloning repo: " + e.toString());
+                    logger.error("Failed to clone repository. " + e.toString());
                     e.printStackTrace();
+                    ProphetError error = new ProphetError();
+                    error.setError(true);
+                    error.setMessage("Failed to clone repository. " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
                 }
             }
             request.setRepositories(localRepos);
@@ -80,13 +84,13 @@ public class ProphetUtilsController {
             e.printStackTrace();
             ProphetError error = new ProphetError();
             error.setError(true);
-            error.setMessage(e.getMessage());
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            error.setMessage("Failed to process project. " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         } finally {
             try {
                 FileUtils.deleteDirectory(dir);
             } catch (IOException e) {
-                logger.error("Failed to delete project directory!");
+                logger.error("Failed to delete project directory.");
                 e.printStackTrace();
             }
         }
