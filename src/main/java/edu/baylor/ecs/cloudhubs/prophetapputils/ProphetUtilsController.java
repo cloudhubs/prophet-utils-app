@@ -1,6 +1,7 @@
 package edu.baylor.ecs.cloudhubs.prophetapputils;
 
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppData;
+import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppGlobal;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetError;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.GitReq;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.RepoReq;
@@ -37,7 +38,7 @@ public class ProphetUtilsController {
     Logger logger = LoggerFactory.getLogger(ProphetUtilsController.class);
 
     @PostMapping("/")
-    public ResponseEntity getMultiRepoAppData(@RequestBody GitReq request) {
+    public ResponseEntity<ProphetAppData> getMultiRepoAppData(@RequestBody GitReq request) {
         String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
         File dir = new File(dirName);
         boolean result = dir.mkdirs();
@@ -69,11 +70,14 @@ public class ProphetUtilsController {
                     localRepos.add(repo);
                 } catch (GitAPIException e) {
                     logger.error("Failed to clone repository. " + e.toString());
-                    e.printStackTrace();
-                    ProphetError error = new ProphetError();
-                    error.setError(true);
-                    error.setMessage("Failed to clone repository. " + e.getMessage());
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+                    ProphetAppGlobal global = new ProphetAppGlobal();
+                    global.setNoCommunication(true);
+                    global.setNoContextMap(true);
+                    global.setCannotClone(true);
+                    data.setGlobal(global);
+                    data.setMs(new ArrayList<>());
+
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
                 }
             }
             request.setRepositories(localRepos);
@@ -81,11 +85,12 @@ public class ProphetUtilsController {
             logger.info("Finished processing project");
         } catch(Exception e) {
             logger.error("Failed to process project!\n" + e.getMessage());
-            e.printStackTrace();
-            ProphetError error = new ProphetError();
-            error.setError(true);
-            error.setMessage("Failed to process project. " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            ProphetAppGlobal global = new ProphetAppGlobal();
+            global.setNoCommunication(true);
+            global.setNoContextMap(true);
+            data.setGlobal(global);
+            data.setMs(new ArrayList<>());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
         } finally {
             try {
                 FileUtils.deleteDirectory(dir);
