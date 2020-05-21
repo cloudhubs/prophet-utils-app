@@ -28,3 +28,12 @@ Response format:
 	}
 
 Build prophet-dto and prophet-utils with `mvn clean install package -DskipTests`, then run this project with `mvn clean spring-boot:run -DskipTests`
+
+## Build Docker Image
+
+```
+$ mvn clean install -DskipTests
+$ docker build -t cloudhubs2/prophet-app-utils .
+$ docker push cloudhubs2/prophet-app-utils
+$ docker run -d -p 8081:8081 cloudhubs2/prophet-app-utils
+```
