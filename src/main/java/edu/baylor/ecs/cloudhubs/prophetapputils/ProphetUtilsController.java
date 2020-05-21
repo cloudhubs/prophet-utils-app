@@ -45,6 +45,7 @@ public class ProphetUtilsController {
         File dir = new File(dirName);
         boolean result = dir.mkdirs();
         if (!result) {
+            System.out.println("Failed to create directory " + dir.getPath());
             return null;
         }
         ProphetAppData data = new ProphetAppData();
@@ -58,6 +59,7 @@ public class ProphetUtilsController {
                 File repoDir = new File(repoDirName);
                 result = repoDir.mkdir();
                 if (!result) {
+                    System.out.println("Failed to create directory " + repoDir.getPath());
                     return null;
                 }
 
