@@ -2,7 +2,6 @@ package edu.baylor.ecs.cloudhubs.prophetapputils;
 
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppData;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetAppGlobal;
-import edu.baylor.ecs.cloudhubs.prophetdto.app.ProphetError;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.GitReq;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.RepoReq;
 import edu.baylor.ecs.cloudhubs.prophetutils.ProphetUtilsFacade;
