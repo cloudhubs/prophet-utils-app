@@ -1,3 +1,13 @@
+# Prophet
+This is one component of the Prophet system.
+
+- [React frontend: prophet-web](https://github.com/cloudhubs/prophet-web)
+- REST API: prophet-utils-app (this project)
+- [Backend functionality: prophet-utils](https://github.com/cloudhubs/prophet-utils)
+- [Backend classes and DTOs: prophet-dto](https://github.com/cloudhubs/prophet-dto)
+- [REST API Discovery: rad-source](https://github.com/cloudhubs/rad-source)
+- [Bounded context creation: bounded-context](https://github.com/cloudhubs/bounded-context)
+
 # Prophet Utils App
 Request format: 
 
