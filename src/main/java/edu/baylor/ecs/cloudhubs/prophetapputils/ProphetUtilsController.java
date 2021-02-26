@@ -41,7 +41,7 @@ public class ProphetUtilsController {
     @PostMapping("/")
     @CrossOrigin("*")
     public ResponseEntity<ProphetAppData> getMultiRepoAppData(@RequestBody GitReq request) {
-        String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+        String dirName = "repositories/repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
         File dir = new File(dirName);
         boolean result = dir.mkdirs();
         if (!result) {

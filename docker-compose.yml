@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    volumes:
+      - repositories:/repositories
   prophet-utils-app:
     container_name: prophet-utils-app-docker
     build:
@@ -14,3 +16,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    volumes:
+      - repositories:/repositories
+volumes:
+  repositories:
