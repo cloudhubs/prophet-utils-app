@@ -106,4 +106,73 @@ public class ProphetUtilsController {
 
         return ResponseEntity.ok(data);
     }
+    
+    @PostMapping("/json")
+    @CrossOrigin("*")
+    public ResponseEntity<ProphetAppData> getMultiRepoAppJSONData(@RequestBody GitReq request) {
+        String dirName = "repos-" + LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+        File dir = new File(dirName);
+        boolean result = dir.mkdirs();
+        if (!result) {
+            System.out.println("Failed to create directory " + dir.getPath());
+            return null;
+        }
+        ProphetAppData data = new ProphetAppData();
+
+        try {
+            List<RepoReq> localRepos = new ArrayList<>();
+            for (RepoReq repo : request.getRepositories()) {
+                String repoUrl = repoPrefix + repo.getPath();
+                String repoName = new URIish(repoUrl).getHumanishName();
+                String repoDirName = dirName + "/" + repoName;
+                File repoDir = new File(repoDirName);
+                result = repoDir.mkdir();
+                if (!result) {
+                    System.out.println("Failed to create directory " + repoDir.getPath());
+                    return null;
+                }
+
+                try {
+                    System.out.println("Cloning " + repoUrl + " into " + repoDirName);
+                    Git.cloneRepository()
+                            .setURI(repoUrl)
+                            .setDirectory(Paths.get(repoDirName).toFile())
+                            .call();
+                    System.out.println("Completed Cloning");
+                    repo.setPath(repoDir.getCanonicalPath());
+                    localRepos.add(repo);
+                } catch (GitAPIException e) {
+                    logger.error("Failed to clone repository. " + e.toString());
+                    ProphetAppGlobal global = new ProphetAppGlobal();
+                    global.setNoCommunication(true);
+                    global.setNoContextMap(true);
+                    global.setCannotClone(true);
+                    data.setGlobal(global);
+                    data.setMs(new ArrayList<>());
+
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
+                }
+            }
+            request.setRepositories(localRepos);
+            data = ProphetUtilsFacade.getProphetJSONAppData(request);
+            logger.info("Finished processing project");
+        } catch(Exception e) {
+            logger.error("Failed to process project!\n" + e.getMessage());
+            ProphetAppGlobal global = new ProphetAppGlobal();
+            global.setNoCommunication(true);
+            global.setNoContextMap(true);
+            data.setGlobal(global);
+            data.setMs(new ArrayList<>());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(data);
+        } finally {
+            try {
+                FileUtils.deleteDirectory(dir);
+            } catch (IOException e) {
+                logger.error("Failed to delete project directory.");
+                e.printStackTrace();
+            }
+        }
+
+        return ResponseEntity.ok(data);
+    }
 }
