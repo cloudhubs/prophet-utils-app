@@ -7,6 +7,7 @@ import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.GitReq;
 import edu.baylor.ecs.cloudhubs.prophetdto.app.utilsapp.RepoReq;
 import edu.baylor.ecs.cloudhubs.prophetutils.ProphetUtilsFacade;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.URIish;
@@ -54,7 +55,16 @@ public class ProphetUtilsController {
             List<RepoReq> localRepos = new ArrayList<>();
             for (RepoReq repo : request.getRepositories()) {
                 String repoUrl = repoPrefix + repo.getPath();
-                String repoName = new URIish(repoUrl).getHumanishName();
+                String fullRepoName = new URIish(repoUrl).getHumanishName();
+                String[] fullRepoNameSplitted = fullRepoName.split("#");
+                String branchName = null;
+                String repoName = fullRepoName;
+                if (fullRepoNameSplitted.length > 1) {
+                    branchName = fullRepoNameSplitted[1];
+                    repoName = fullRepoNameSplitted[0];
+                    repoUrl = repoUrl.split("#")[0];
+                }
+
                 String repoDirName = dirName + "/" + repoName;
                 File repoDir = new File(repoDirName);
                 result = repoDir.mkdir();
@@ -64,11 +74,15 @@ public class ProphetUtilsController {
                 }
 
                 try {
-                    System.out.println("Cloning " + repoUrl + " into " + repoDirName);
-                    Git.cloneRepository()
+                    System.out.println("Cloning " + repoUrl + (branchName != null ? "#" + branchName : "") + " into " + repoDirName);
+                    CloneCommand gitCloneCommand = Git.cloneRepository()
                             .setURI(repoUrl)
-                            .setDirectory(Paths.get(repoDirName).toFile())
-                            .call();
+                            .setDirectory(Paths.get(repoDirName).toFile());
+                    if (branchName != null) {
+                        gitCloneCommand.setBranch(branchName);
+                    }
+                    gitCloneCommand.call();
+
                     System.out.println("Completed Cloning");
                     repo.setPath(repoDir.getCanonicalPath());
                     localRepos.add(repo);
